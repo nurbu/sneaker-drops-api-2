@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class SneakerService {
@@ -21,25 +22,32 @@ public class SneakerService {
         this.brandRepository = brandRepository;
     }
 
-    public List<Sneaker> allSneakers() {
-        return sneakerRepository.findAll();
-    }
-
     public Sneaker findById(Long id) {
-        return sneakerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id));
+        return sneakerRepository.findById(id).orElse(null);
     }
 
-    public List<Sneaker> findByYear(int year) {
-        return sneakerRepository.findByReleaseYear(year);
-    }
+    public List<Sneaker> search(Integer year, String model, String brand,
+                                Double minPrice, Double maxPrice) {
+        Stream<Sneaker> stream = sneakerRepository.findAll().stream();
 
-    public List<Sneaker> findByPrice(double price) {
-        return sneakerRepository.findByPriceLessThan(price);
-    }
+        if (year != null) {
+            stream = stream.filter(s -> s.getReleaseYear() == year);
+        }
+        if (model != null && !model.isBlank()) {
+            stream = stream.filter(s -> s.getModel().toLowerCase()
+                    .contains(model.toLowerCase()));
+        }
+        if (brand != null && !brand.isBlank()) {
+            stream = stream.filter(s -> s.getBrand().getName().equalsIgnoreCase(brand));
+        }
+        if (minPrice != null) {
+            stream = stream.filter(s -> s.getPrice() >= minPrice);
+        }
+        if (maxPrice != null) {
+            stream = stream.filter(s -> s.getPrice() <= maxPrice);
+        }
 
-    public List<Sneaker> findByModel(String model) {
-        return sneakerRepository.findByModelContaining(model);
+        return stream.toList();
     }
 
     public Sneaker add(String model, double price, int releaseYear, Long brandId) {
@@ -50,6 +58,7 @@ public class SneakerService {
 
     public Sneaker updatePrice(Long id, double newPrice) {
         Sneaker sneaker = findById(id);
+        if (sneaker == null) throw new NotFoundException(id);
         sneaker.setPrice(newPrice);
         return sneakerRepository.save(sneaker);
     }
@@ -61,11 +70,7 @@ public class SneakerService {
         sneakerRepository.deleteById(id);
     }
 
-    public List<Sneaker> findByBrand(String brandName) {
-        return sneakerRepository.findByBrandName(brandName);
-    }
-
-    public List<Sneaker> search(double maxPrice, int minReleaseYear) {
-        return sneakerRepository.search(maxPrice, minReleaseYear);
+    public List<Sneaker> allSneakers() {
+        return sneakerRepository.findAll();
     }
 }
