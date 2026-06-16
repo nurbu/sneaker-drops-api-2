@@ -21,11 +21,6 @@ public class SneakerController {
     }
 
     @GetMapping
-    public List<Sneaker> getAll() {
-        return sneakerService.allSneakers();
-    }
-
-    @GetMapping
     public List<Sneaker> search(
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) String model,

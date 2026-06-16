@@ -69,8 +69,4 @@ public class SneakerService {
         }
         sneakerRepository.deleteById(id);
     }
-
-    public List<Sneaker> allSneakers() {
-        return sneakerRepository.findAll();
-    }
 }
