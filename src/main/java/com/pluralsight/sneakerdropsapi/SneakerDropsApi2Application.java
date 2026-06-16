@@ -1,0 +1,13 @@
+package com.pluralsight.sneakerdropsapi;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SneakerDropsApi2Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SneakerDropsApi2Application.class, args);
+    }
+
+}
